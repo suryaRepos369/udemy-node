@@ -1,12 +1,11 @@
-const mongoose = require ('mongoose')
+const mongoose = require ('mongoose');
 
+const config = require('../config/config')
  const dbConnect = async ()=>{
    console.log('connecting mongo db ')
     try {
         
-        const username ='admin';
-        const password ='password'
-        const a = await mongoose.connect(`mongodb://${username}:${password}@localhost:27017`)
+        const a = await mongoose.connect(config.mongodb_url)
         console.log('successfully connected to db')
     } catch (error) {
         
