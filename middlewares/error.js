@@ -7,7 +7,6 @@ const errorHandler =(err, req, res, next)=>{
     console.log(config.env)
 
     if(config.env==='production' && !err.isOperational){
-        console.log('productio error')
         statusCode = httpStatus.INTERNAL_SERVER_ERROR;
         message= httpStatus[statusCode];
     }

@@ -1,6 +1,8 @@
 const joi = require ('joi');
 require('dotenv').config()
+const log = require('./logger')
 
+let {logger} =log;
 const envVarSchema = joi.object({
     MONGODB_URL : joi.string().required(),
     PORT :joi.number().positive().default(3001)
@@ -9,7 +11,7 @@ const envVarSchema = joi.object({
 const {value:envVars , error} = envVarSchema.validate(process.env)
 
 if(error){
-    console.log("missing ENV files ", error)
+    logger.error("missing ENV files ", error)
     process.exit(1);
 }
 

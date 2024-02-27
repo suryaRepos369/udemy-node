@@ -4,6 +4,7 @@
   "description": "node advanced concepts",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "surya",
@@ -13,6 +14,11 @@
     "express": "^4.18.2",
     "http-status": "^1.7.4",
     "joi": "^17.12.2",
-    "mongoose": "^8.2.0"
+    "mongoose": "^8.2.0",
+    "morgan": "^1.10.0",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }

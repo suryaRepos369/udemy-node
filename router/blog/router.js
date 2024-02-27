@@ -4,24 +4,19 @@ const Blog = require('./../../models/blog.model')
 const { createBlogSchema } = require('./../../validations/blog.validation.js')
 const validateBlog = require('../../middlewares/validate.js')
 const catchAsync = require('../../utils/catchAsync.js')
+const {getList, addList } = require('../../services/blog/blog.service.js')
+const httpStatus = require('http-status')
 
 router.get('/list',catchAsync(async (req, res) => {
-    const data = await Blog.find({})
-    if (data && data.length > 0) {
-      res.send(data)
-    } else {
-      res.send({
-        response: 'No data found'
-      })
-    }
+    const a = await  getList();
+    res.status(httpStatus.OK).json(a)
 }) )
 
-const createList = catchAsync(async(req, res)=>{
-    const newData = new Blog(req.body)
-    const a = await newData.saveee()
-    res.status(201).send(a)     
-})
 
-router.post('/addList', validateBlog(createBlogSchema),createList)
+
+router.post('/addList', validateBlog(createBlogSchema),async(req, res)=>{
+   const a = await (req.body);
+   res.status(httpStatus.CREATED).send({success:true, message:'Blog created successfully'})
+})
 
 module.exports = router

@@ -1,36 +1,40 @@
-const express = require('express')
-const app = new express ();
 const mongoose = require ('mongoose')
 const dbConnect = require('./db/db')
-const blogRouter = require('./router/blog/router')
+const app = require('./server')
+const http = require('http')
 const config = require('./config/config')
-const {errorHandler, errorConverter} = require('./middlewares/error');
-const httpStatus = require('http-status')
-const ApiError = require('./utils/ApiError')
-
-
+const log = require('./config/logger')
 
 dbConnect();
-app.use(express.json())
-app.use('/blog',blogRouter)
+const httpServer = http.createServer(app);
+const server = httpServer.listen(config.port, () => {
+log.logger.info(`Server is running on port ${config.port}`);
+});
 
+const exitHandler=()=>{
+    if(server){
+        server.close(()=>{
+            log.logger.info('server closed due to error');
+            process.exit(1)
+        })
+    }
+    else{
+        process.exit(1)
+    }
+}
 
+const unExpectedErrorHandler =(error)=>{
+    console.log(error);
+    exitHandler();
+}
 
-//global error handling 
-
-//no endpoint error
-app.use((req, res, next)=>{
-    next(new ApiError(httpStatus.NOT_FOUND, 'Not found'))
+process.on('unhandledRejection', unExpectedErrorHandler)
+process.on('uncaughtException', unExpectedErrorHandler)
+process.on("SIGTERM", ()=>{
+    console.log("sigterm received")
+    if(server){
+        server.close()
+    }
 })
 
-//if error is not standard error convert to a proper error
-app.use(errorConverter)
 
-//add a handler for the errors 
-app.use(errorHandler)
-
-
-//start server 
-app.listen(config.port, () => {
-  console.log(`Server is running on port ${config.port}`);
-});
