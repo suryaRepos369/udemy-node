@@ -3,8 +3,8 @@ const config = require('../config/config');
 const ApiError = require('../utils/ApiError');
 const httpStatus = require('http-status')
 const errorHandler =(err, req, res, next)=>{
-    let {statusCode, message,isOperational} = err;
-    console.log(config.env)
+    console.log('**************************error handler called')
+    let {statusCode, message} = err;
 
     if(config.env==='production' && !err.isOperational){
         statusCode = httpStatus.INTERNAL_SERVER_ERROR;
@@ -13,7 +13,7 @@ const errorHandler =(err, req, res, next)=>{
     const response = {
         error:true,
         code:statusCode,
-        message: JSON.stringify(message),
+        message,
         ...(config.env ==='developement' && {stack:err.stack})
     }
 
@@ -22,8 +22,9 @@ const errorHandler =(err, req, res, next)=>{
 }
 
 const errorConverter=(err, req, res, next)=>{
+    console.log('*********************************error converted called')
     let error = err
-     if(!(error instanceof(ApiError))){
+     if(!(error instanceof ApiError )){
        const statusCode = error.statusCode || error instanceof mongoose.Error ?httpStatus.BAD_REQUEST:httpStatus.INTERNAL_SERVER_ERROR;
        const message = error.message|| httpStatus[statusCode];
        error = new ApiError(statusCode, message,false, error.stack)

@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const Blog = require('./../../models/blog.model')
 const { createBlogSchema } = require('./../../validations/blog.validation.js')
 const validateBlog = require('../../middlewares/validate.js')
 const catchAsync = require('../../utils/catchAsync.js')
@@ -14,9 +13,9 @@ router.get('/list',catchAsync(async (req, res) => {
 
 
 
-router.post('/addList', validateBlog(createBlogSchema),async(req, res)=>{
-   const a = await (req.body);
-   res.status(httpStatus.CREATED).send({success:true, message:'Blog created successfully'})
-})
+router.post('/addList', validateBlog(createBlogSchema), catchAsync(async(req, res, next)=>{
+    const a = await  addList(req.body);
+    res.status(httpStatus.CREATED).send({success:true, message:'Blog created successfully'})
+ }))
 
 module.exports = router
