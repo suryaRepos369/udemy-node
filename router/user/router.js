@@ -9,8 +9,7 @@ const ApiResponse = require('../../utils/ApiResponse.js')
 
 router.get('/getUser',catchAsync( async(req, res, next)=>{
    const a = await getUser();
-   let b = new ApiResponse(httpStatus.OK, 'fetched users', a)
-   res.send(b)
+   return  new ApiResponse(httpStatus.OK, 'user fetch success', a)
 }))
 
 
@@ -18,7 +17,7 @@ router.get('/getUser',catchAsync( async(req, res, next)=>{
 
 router.post('/addUser', validateBody(createUserSchema),catchAsync((async(req, res, next)=>{
    const a = await createUser(req.body);
-    if(a) res.status(httpStatus.CREATED).send({success:true, message:'User ** created successfully'})
+    return new ApiResponse(httpStatus.CREATED,'Creation success',a)
  })) )
 
 

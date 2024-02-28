@@ -5,17 +5,18 @@ const validateBlog = require('../../middlewares/validate.js')
 const catchAsync = require('../../utils/catchAsync.js')
 const {getList, addList } = require('../../services/blog/blog.service.js')
 const httpStatus = require('http-status')
+const ApiResponse = require('../../utils/ApiResponse.js')
 
 router.get('/list',catchAsync(async (req, res) => {
     const a = await  getList();
-    res.status(httpStatus.OK).json(a)
+    return new ApiResponse(httpStatus.OK, 'get user list success', a)
 }) )
 
 
 
 router.post('/addList', validateBlog(createBlogSchema), catchAsync(async(req, res, next)=>{
     const a = await  addList(req.body);
-    res.status(httpStatus.CREATED).send({success:true, message:'Blog created successfully'})
+    return  new ApiResponse(httpStatus.CREATED, 'Blog creation success', a)
  }))
 
 module.exports = router

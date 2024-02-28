@@ -12,7 +12,7 @@ const validateSchema = schema => (req, res, next) => {
   const { value, error } = joi.compile(schema).validate(object)
 
   if (error) {
-    const errors = error.details.map((detail)=>detail.message).join(',');
+    const errors = error.details.map(detail => detail.message).join(',')
     next(new ApiError(400, errors))
   } else {
     return next()
