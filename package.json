@@ -10,7 +10,7 @@
     "prepare": "husky"
   },
   "lint-staged":{
-    "**/*":"prettier --write"
+    "*.{js,jsx, ts, tsx, md, html, css}":"prettier --write"
   },
   "author": "surya",
   "license": "ISC",
