@@ -20,6 +20,11 @@ const userSchema = mongoose.Schema({
     },
 },{timestamps:true});
 
+userSchema.statics.isEmailTaken=async function(email){
+    const user = await this.findOne({email})
+    return !!user;
+}
+
 const User = mongoose.model('User', userSchema)
 
 module.exports  =User;
