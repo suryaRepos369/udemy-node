@@ -1,40 +1,83 @@
-const mongoose = require ('mongoose')
-const dbConnect = require('./db/db')
-const app = require('./server')
-const http = require('http')
-const config = require('./config/config')
-const log = require('./config/logger')
+const http = require("http");
+const config = require("./config/config");
+const log = require("./config/logger");
+const dbConnect = require("./db/db");
+const app = require("./server");
 
-dbConnect();
-const httpServer = http.createServer(app);
-const server = httpServer.listen(config.port, () => {
-log.logger.info(`Server is running on port ${config.port}`);
+let server;
+
+async function startServer() {
+  try {
+    await dbConnect();
+    const httpServer = http.createServer(app);
+    server = httpServer.listen(config.port, () => {
+      log.logger.info(`Server is running on port ${config.port}`);
+    });
+  } catch (error) {
+    log.logger.error("Error starting server:", error);
+    exitHandler();
+  }
+}
+
+function exitHandler() {
+  if (server) {
+    server.close(() => {
+      log.logger.info("Server closed due to error");
+      process.exit(1);
+    });
+  } else {
+    process.exit(1);
+  }
+}
+
+function gracefulShutdown() {
+  log.logger.info("Received SIGINT signal. Shutting down gracefully...");
+  if (server) {
+    server.close(() => {
+      log.logger.info("HTTP server closed.");
+      process.exit(0);
+    });
+  } else {
+    process.exit(0);
+  }
+}
+
+async function gracefulShutdownSIGTERM() {
+  log.logger.info("SIGTERM received. Shutting down gracefully...");
+  if (server) {
+    try {
+      await new Promise((resolve, reject) => {
+        server.close((err) => {
+          if (err) {
+            log.logger.error("Error while closing server:", err);
+            reject(err);
+          } else {
+            log.logger.info("Server closed successfully.");
+            resolve();
+          }
+        });
+      });
+    } catch (error) {
+      log.logger.error("Error while closing server:", error);
+      process.exit(1);
+    }
+  }
+  process.exit(0);
+}
+
+// Start server
+startServer();
+
+// Event handlers
+process.on("unhandledRejection", (reason, promise) => {
+  log.logger.error("Unhandled Rejection at:", promise, "reason:", reason);
 });
 
-const exitHandler=()=>{
-    if(server){
-        server.close(()=>{
-            log.logger.info('server closed due to error');
-            process.exit(1)
-        })
-    }
-    else{
-        process.exit(1)
-    }
-}
+process.on("uncaughtException", (error) => {
+  log.logger.error("Uncaught Exception:", error);
+  exitHandler();
+});
 
-const unExpectedErrorHandler =(error)=>{
-    console.log(error);
-    exitHandler();
-}
+process.on("SIGINT", gracefulShutdown);
 
-process.on('unhandledRejection', unExpectedErrorHandler)
-process.on('uncaughtException', unExpectedErrorHandler)
-process.on("SIGTERM", ()=>{
-    console.log("sigterm received")
-    if(server){
-        server.close()
-    }
-})
-
-
+process.on("SIGTERM", gracefulShutdownSIGTERM);
