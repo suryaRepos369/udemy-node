@@ -6,8 +6,7 @@ const { logger } = require("../config/logger");
 const errorHandler = (err, req, res, next) => {
   // console.log('**************************error handler called')
   let { statusCode, message } = err;
-
-  if (config.env === "production" && err.isOperational) {
+  if (config.env === "production") {
     statusCode = httpStatus.INTERNAL_SERVER_ERROR;
     message = message || httpStatus[statusCode];
   }

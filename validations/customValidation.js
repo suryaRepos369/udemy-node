@@ -4,6 +4,7 @@ const password = (value, helpers) => {
     helpers.message(
       "Password atleast 8 chars with a uppercase, lowercase, number and special character",
     );
+  return value;
 };
 
 module.exports = { password };

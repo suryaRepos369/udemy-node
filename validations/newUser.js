@@ -7,5 +7,11 @@ const createUserSchema = {
     password: joi.custom(password).required(),
   }),
 };
+const loginUserSchema = {
+  body: joi.object().keys({
+    email: joi.string().required(),
+    password: joi.custom(password).required(),
+  }),
+};
 
-module.exports = { createUserSchema };
+module.exports = { createUserSchema, loginUserSchema };
