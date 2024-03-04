@@ -12,7 +12,7 @@ const getUser = async (email) => {
   return await User.findOne({ email });
 };
 const getUserById = async (id) => {
-  return await User.findOne({ id });
+  return await User.findOne({ _id: id });
 };
 const getAllUser = async () => {
   return await User.find({});

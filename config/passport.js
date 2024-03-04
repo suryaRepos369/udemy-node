@@ -14,7 +14,7 @@ const jwtVerify = async (payload, done) => {
     if (payload.type != "access") {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid token type");
     }
-    const user = getUserById(payload.sub);
+    const user = await getUserById(payload.sub);
     if (!user) {
       return done(null, false);
     }
