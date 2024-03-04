@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
-
+const toJson = require("@meanie/mongoose-to-json");
 const userSchema = mongoose.Schema(
   {
     name: {
@@ -21,6 +21,7 @@ const userSchema = mongoose.Schema(
     password: {
       type: String,
       required: true,
+      private: true,
       trim: true,
       minlength: 5,
       validate(value) {

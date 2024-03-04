@@ -9,11 +9,17 @@ const httpStatus = require("http-status");
 const ApiError = require("./utils/ApiError");
 const morgan = require("./config/morgan");
 const log = require("./config/logger");
+const passport = require("passport");
+const { JwtStrategy } = require("./config/passport");
 
 log.attachLogger(app);
 
 app.use(morgan);
 app.use(express.json());
+
+app.use(passport.initialize());
+passport.use("jwt", JwtStrategy);
+
 app.use("/blog", blogRouter);
 app.use("/user", userRouter);
 app.use("/auth", authRouter);

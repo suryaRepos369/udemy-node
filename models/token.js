@@ -22,10 +22,10 @@ const tokenSchema = mongoose.Schema(
       required: true,
       enum: [tokenTypes.ACCESS, tokenTypes.REFRESH],
     },
-    expires: {
-      type: Date,
-      required: true,
-    },
+    // expires: {
+    //   type: Date,
+    //   required: true,
+    // },
     blacklisted: {
       type: Boolean,
       default: false,
@@ -34,6 +34,6 @@ const tokenSchema = mongoose.Schema(
   { timestamps: true },
 );
 
-const Token = mongoose.model("Token", userSchema);
+const Token = mongoose.model("Token", tokenSchema);
 
 module.exports = Token;

@@ -2,10 +2,17 @@ const httpStatus = require("http-status");
 const User = require("../../models/user.js");
 const ApiError = require("../../utils/ApiError.js");
 const { logger } = require("../../config/logger.js");
-const generateToken = require("../token/generateToken.js");
+const {
+  generateToken,
+  saveToken,
+  verifyToken,
+} = require("../token/generateToken.js");
 
 const getUser = async (email) => {
   return await User.findOne({ email });
+};
+const getUserById = async (id) => {
+  return await User.findOne({ id });
 };
 const getAllUser = async () => {
   return await User.find({});
@@ -27,13 +34,13 @@ const createUser = async (body) => {
     savedData = await newData.save();
     const accessToken = await generateToken(savedData._id, "access");
     const refreshToken = await generateToken(savedData._id, "refresh");
-
+    const tdr = await saveToken(refreshToken, savedData._id, "refresh", false);
+    logger.info("refresh token saved");
     logger.info(`User created successfully ${savedData._id}`);
     return { email: savedData?.email, token: { accessToken, refreshToken } };
   } catch (error) {
     logger.error("Error creating user:", error);
     if (savedData) {
-      console.log("Reverting save operation...");
       const result = await User.deleteOne({ _id: savedData._id });
     }
 
@@ -41,4 +48,4 @@ const createUser = async (body) => {
   }
 };
 
-module.exports = { getUser, createUser, getAllUser };
+module.exports = { getUser, createUser, getAllUser, getUserById };
