@@ -6,23 +6,64 @@ const {
   verifyToken,
   saveToken,
 } = require("../token/generateToken");
+const {
+  emailIpBruteLimiter,
+  slowerBruteLimiter,
+  emailBruteLimiter,
+} = require("../../middlewares/rateLimiter");
+const { logger } = require("../../config/logger");
+
+// const login = async (body) => {
+//   const { email, password, ipAddress } = body;
+//   const promises =[slowerBruteLimiter.consume(ipAddress)]
+//   try {
+//     const user = await getUser(email);
+//     const isPwdMatch = await user.isPasswordMatch(password);
+
+//     if (user && isPwdMatch) {
+//       const tokens = await loginTokens(user._id);
+//       // await saveToken(tokens.accessToken,user._id, 'access' )
+//       await saveToken(tokens.refreshToken, user._id, "refresh");
+//       await Promise.all(promises);
+//       return tokens;
+//     }
+//      else {
+//       user&&promises.push(emailIpBruteLimiter.consume(`${email}_${ipAddress}`))
+//       throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid credentials");
+//     }
+
+//   }
+//   catch (err) {
+//     throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid credentials");
+//   }
+// };
 
 const login = async (body) => {
-  const { email, password } = body;
+  const { email, password, ipAddress } = body;
   try {
+    const promises = [slowerBruteLimiter.consume(ipAddress)];
     const user = await getUser(email);
-    const isPwdMatch = await user.isPasswordMatch(password);
-    console.log(user, isPwdMatch);
-    if (user && isPwdMatch) {
-      const tokens = await loginTokens(user._id);
-      // await saveToken(tokens.accessToken,user._id, 'access' )
-      await saveToken(tokens.refreshToken, user._id, "refresh");
-      return tokens;
-    } else {
+    if (!user || !(await user.isPasswordMatch(password))) {
+      user &&
+        promises.push([
+          emailIpBruteLimiter.consume(`${email}_${ipAddress}`),
+          emailBruteLimiter.consume(email),
+        ]);
+      await Promise.all(promises);
       throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid credentials");
     }
-  } catch (err) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid credentials");
+    const tokens = await loginTokens(user._id);
+    await saveToken(tokens.refreshToken, user._id, "refresh");
+    return tokens;
+  } catch (error) {
+    console.log("error", error);
+    logger.error("Login error:", error);
+    throw new ApiError(
+      error?.remainingPoints == 0
+        ? httpStatus.TOO_MANY_REQUESTS
+        : error.statusCode,
+      error?.remainingPoints == 0 ? "Too many requests" : error.message,
+    );
   }
 };
 
