@@ -25,4 +25,5 @@ module.exports = {
     secret: envVars.JWT_SECRET,
     expiry: envVars.JWT_ACCESS_EXPIRY_MINUTES,
   },
+  openai: envVars.OPEN_AI_API_KEY,
 };
