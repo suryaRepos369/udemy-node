@@ -14,6 +14,7 @@ const {
 const { logger } = require('../../config/logger');
 const transporter = require('../../utils/emailTransport');
 const config = require('../../config/config');
+const getTime = require('../../utils/getTime');
 
 const login = async (body) => {
   const { email, password, ipAddress } = body;
@@ -33,13 +34,11 @@ const login = async (body) => {
     await saveToken(tokens.refreshToken, user._id, 'refresh');
     //send user mail
     await transporter.sendMail({
-      from: config.mail.id,
+      from: 'suryaoff369@gmail.com',
       to: 'suryaprakasamc@gmail.com',
       subject: 'checking node  mailer',
-      text: `Logging detected for user ${user.name} with mail ${email} at ${Date.now()} \n If not You Please contact support`,
+      text: `Logging detected for user ${user.name} with mail ${email} at ${getTime()} \n If not You Please contact support`,
     });
-    transporter;
-
     return tokens;
   } catch (error) {
     console.log('error', error);
