@@ -35,4 +35,8 @@ module.exports = {
     },
     reportOnly: true,
   },
+  mail: {
+    id: envVars.EMAIL,
+    pwd: envVars.PWD,
+  },
 };

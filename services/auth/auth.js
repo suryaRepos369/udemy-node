@@ -12,31 +12,8 @@ const {
   emailBruteLimiter,
 } = require('../../middlewares/rateLimiter');
 const { logger } = require('../../config/logger');
-
-// const login = async (body) => {
-//   const { email, password, ipAddress } = body;
-//   const promises =[slowerBruteLimiter.consume(ipAddress)]
-//   try {
-//     const user = await getUser(email);
-//     const isPwdMatch = await user.isPasswordMatch(password);
-
-//     if (user && isPwdMatch) {
-//       const tokens = await loginTokens(user._id);
-//       // await saveToken(tokens.accessToken,user._id, 'access' )
-//       await saveToken(tokens.refreshToken, user._id, "refresh");
-//       await Promise.all(promises);
-//       return tokens;
-//     }
-//      else {
-//       user&&promises.push(emailIpBruteLimiter.consume(`${email}_${ipAddress}`))
-//       throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid credentials");
-//     }
-
-//   }
-//   catch (err) {
-//     throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid credentials");
-//   }
-// };
+const transporter = require('../../utils/emailTransport');
+const config = require('../../config/config');
 
 const login = async (body) => {
   const { email, password, ipAddress } = body;
@@ -54,6 +31,15 @@ const login = async (body) => {
     }
     const tokens = await loginTokens(user._id);
     await saveToken(tokens.refreshToken, user._id, 'refresh');
+    //send user mail
+    await transporter.sendMail({
+      from: config.mail.id,
+      to: 'suryaprakasamc@gmail.com',
+      subject: 'checking node mailer',
+      text: `Logging detected for user ${user.name} with mail ${email} at ${Date.now()} \n If not You Please contact support`,
+    });
+    transporter;
+
     return tokens;
   } catch (error) {
     console.log('error', error);
