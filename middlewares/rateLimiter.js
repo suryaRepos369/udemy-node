@@ -40,8 +40,8 @@ const authLimiter = async (req, res, next) => {
       emailBruteLimiter.get(req.body.email),
     ]);
 
-    console.log('&&&&&&&&&&&&&&', slowerBruteRes);
-    console.log('%%%%%%%%%%%%%% email Ip logins', emailIpRes);
+    // console.log('&&&&&&&&&&&&&&', slowerBruteRes);
+    // console.log('%%%%%%%%%%%%%% email Ip logins', emailIpRes);
     let retrySeconds = 0;
 
     if (slowerBruteRes && slowerBruteRes.consumedPoints > maxAttemptsPerDay) {
@@ -55,9 +55,9 @@ const authLimiter = async (req, res, next) => {
       retrySeconds = Math.floor(emailIpRes.msBeforeNext / 1000) || 1;
     }
 
-    console.log('retry seconds', retrySeconds);
+    // console.log('retry seconds', retrySeconds);
     if (retrySeconds > 0) {
-      console.log('retry second >0 ');
+      // console.log('retry second >0 ');
       res.set('Retry-After', String(retrySeconds));
       return next(
         new ApiError(httpStatus.TOO_MANY_REQUESTS, 'Too many requests'),

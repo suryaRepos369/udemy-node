@@ -12,9 +12,7 @@ const {
   emailBruteLimiter,
 } = require('../../middlewares/rateLimiter');
 const { logger } = require('../../config/logger');
-const transporter = require('../../utils/emailTransport');
-const config = require('../../config/config');
-const getTime = require('../../utils/getTime');
+const EventEmitter = require('../../utils/eventEmitter');
 
 const login = async (body) => {
   const { email, password, ipAddress } = body;
@@ -33,15 +31,11 @@ const login = async (body) => {
     const tokens = await loginTokens(user._id);
     await saveToken(tokens.refreshToken, user._id, 'refresh');
     //send user mail
-    await transporter.sendMail({
-      from: 'suryaoff369@gmail.com',
-      to: 'suryaprakasamc@gmail.com',
-      subject: 'checking node  mailer',
-      text: `Logging detected for user ${user.name} with mail ${email} at ${getTime()} \n If not You Please contact support`,
-    });
+    console.log('calling login event');
+    EventEmitter.emit('login', user);
     return tokens;
   } catch (error) {
-    console.log('error', error);
+    // console.log('error', error);
     logger.error('Login error:', error);
     throw new ApiError(
       error.remainingPoints == 0

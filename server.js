@@ -13,6 +13,8 @@ const ApiError = require('./utils/ApiError');
 const morgan = require('./config/morgan');
 const log = require('./config/logger');
 const { JwtStrategy } = require('./config/passport');
+const EventEmitter = require('./utils/eventEmitter');
+const subscribers = require('./subscribers/index');
 
 const blogRouter = require('./router/blog/router');
 const userRouter = require('./router/user/router');
@@ -47,6 +49,12 @@ app.use('/blog', blogRouter);
 app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/stream', streamRouter);
+
+Object.keys(subscribers).forEach((eventName) => {
+  EventEmitter.on(eventName, subscribers[eventName]);
+});
+
+console.log('listing subsribers', Object.keys(subscribers));
 
 app.use((req, res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));

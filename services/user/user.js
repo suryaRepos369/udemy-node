@@ -7,11 +7,12 @@ const {
   saveToken,
   verifyToken,
 } = require('../token/generateToken.js');
+const EventEmitter = require('../../utils/eventEmitter.js');
 
 const getUser = async (email) => {
-  console.log('user service mail received', email);
+  // console.log('user service mail received', email);
   let a = await User.findOne({ email });
-  console.log(a);
+  // console.log(a);
   if (a && a != null) return a;
   else return 'No user found';
 };
@@ -41,6 +42,7 @@ const createUser = async (body) => {
     const tdr = await saveToken(refreshToken, savedData._id, 'refresh', false);
     logger.info('refresh token saved');
     logger.info(`User created successfully ${savedData._id}`);
+    EventEmitter.emit('signUp', savedData);
     return { email: savedData?.email, token: { accessToken, refreshToken } };
   } catch (error) {
     logger.error('Error creating user:', error);
