@@ -26,4 +26,13 @@ module.exports = {
     expiry: envVars.JWT_ACCESS_EXPIRY_MINUTES,
   },
   openai: envVars.OPEN_AI_API_KEY,
+  cspOptions: {
+    directives: {
+      defaultSrc: ["self"],
+      styleSrc: ["self", "unsafe-inline"],
+      fontSrc: ["self"],
+      scriptSrc: ["self", "unsafe-inline"],
+    },
+    reportOnly: true,
+  },
 };

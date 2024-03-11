@@ -9,7 +9,12 @@ const {
 } = require("../token/generateToken.js");
 
 const getUser = async (email) => {
-  return await User.findOne({ email });
+  console.log("user service mail received", email);
+  let a = await User.findOne({ email });
+  console.log(a);
+  let { name } = a;
+  if (a && a != null) return { email, name };
+  else return "No user found";
 };
 const getUserById = async (id) => {
   return await User.findOne({ _id: id });

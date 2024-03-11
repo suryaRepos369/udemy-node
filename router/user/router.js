@@ -20,6 +20,16 @@ router.get(
 );
 
 router.post(
+  "/getUser",
+  catchAsync(async (req, res, next) => {
+    console.log(req.body.email);
+    if (!req.body.email) return null;
+    const a = await getUser(req.body.email);
+    return new ApiResponse(httpStatus.OK, "user fetch success", a);
+  }),
+);
+
+router.post(
   "/addUser",
   validateBody(createUserSchema),
   catchAsync(async (req, res, next) => {

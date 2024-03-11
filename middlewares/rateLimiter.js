@@ -4,7 +4,7 @@ const ApiError = require("../utils/ApiError");
 const httpStatus = require("http-status");
 const maxAttemptsPerDay = 100;
 const maxAttemptsByIpUsername = 10;
-const maxAttemptsByEmail = 20;
+const maxAttemptsByEmail = 5;
 
 const emailIpBruteLimiter = new RateLimiterMongo({
   storeClient: mongoose.connection,
@@ -23,7 +23,7 @@ const slowerBruteLimiter = new RateLimiterMongo({
 });
 const emailBruteLimiter = new RateLimiterMongo({
   storeClient: mongoose.connection,
-  points: maxAttemptsPerDay,
+  points: maxAttemptsByEmail,
   duration: 60 * 60 * 24,
   blockDuration: 60 * 60 * 24,
   dbName: "test1",
