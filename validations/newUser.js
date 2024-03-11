@@ -1,5 +1,6 @@
-const joi = require("joi");
-const { password } = require("./customValidation");
+const joi = require('joi');
+const { password } = require('./customValidation');
+
 const createUserSchema = {
   body: joi.object().keys({
     name: joi.string().required(),

@@ -1,8 +1,8 @@
-const joi = require("joi");
-require("dotenv").config();
-const log = require("./logger");
+const joi = require('joi');
+require('dotenv').config();
+const log = require('./logger');
 
-let { logger } = log;
+const { logger } = log;
 const envVarSchema = joi
   .object({
     MONGODB_URL: joi.string().required(),
@@ -13,7 +13,7 @@ const envVarSchema = joi
 const { value: envVars, error } = envVarSchema.validate(process.env);
 
 if (error) {
-  logger.error("missing ENV files ", error);
+  logger.error('missing ENV files ', error);
   process.exit(1);
 }
 
@@ -28,10 +28,10 @@ module.exports = {
   openai: envVars.OPEN_AI_API_KEY,
   cspOptions: {
     directives: {
-      defaultSrc: ["self"],
-      styleSrc: ["self", "unsafe-inline"],
-      fontSrc: ["self"],
-      scriptSrc: ["self", "unsafe-inline"],
+      defaultSrc: ['self'],
+      styleSrc: ['self', 'unsafe-inline'],
+      fontSrc: ['self'],
+      scriptSrc: ['self', 'unsafe-inline'],
     },
     reportOnly: true,
   },

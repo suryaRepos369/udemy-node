@@ -1,12 +1,13 @@
-const { default: mongoose } = require("mongoose");
-const config = require("../config/config");
-const ApiError = require("../utils/ApiError");
-const httpStatus = require("http-status");
-const { logger } = require("../config/logger");
+const { default: mongoose } = require('mongoose');
+const httpStatus = require('http-status');
+const config = require('../config/config');
+const ApiError = require('../utils/ApiError');
+const { logger } = require('../config/logger');
+
 const errorHandler = (err, req, res, next) => {
   // console.log('**************************error handler called')
   let { statusCode, message } = err;
-  if (config.env === "production") {
+  if (config.env === 'production') {
     statusCode = httpStatus.INTERNAL_SERVER_ERROR;
     message = message || httpStatus[statusCode];
   }
@@ -14,7 +15,7 @@ const errorHandler = (err, req, res, next) => {
     error: true,
     code: statusCode || 400,
     message,
-    ...(config.env === "developement" && { stack: err.stack }),
+    ...(config.env === 'developement' && { stack: err.stack }),
   };
   logger.error(`error response sent to user:: ${message}`);
   res.status(statusCode).send(response);
@@ -25,7 +26,7 @@ const errorConverter = (err, req, res, next) => {
   let error = err;
   if (!(error instanceof ApiError)) {
     const statusCode =
-      error.statusCode || config.env === "development"
+      error.statusCode || config.env === 'development'
         ? httpStatus.BAD_REQUEST
         : error instanceof mongoose.Error
           ? httpStatus.BAD_REQUEST

@@ -1,10 +1,10 @@
-const joi = require('joi')
+const joi = require('joi');
 
 const createBlogSchema = {
-    body:joi.object().keys({
-        title:joi.string().required(),
-        description:joi.string().optional()
-    })
-}
+  body: joi.object().keys({
+    title: joi.string().required(),
+    description: joi.string().optional(),
+  }),
+};
 
-module.exports={createBlogSchema}
+module.exports = { createBlogSchema };

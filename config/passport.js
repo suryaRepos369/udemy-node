@@ -1,8 +1,8 @@
-const { Strategy, ExtractJwt } = require("passport-jwt");
-const config = require("./config");
-const { getUserById } = require("../services/user/user");
-const ApiError = require("../utils/ApiError");
-const httpStatus = require("http-status");
+const { Strategy, ExtractJwt } = require('passport-jwt');
+const httpStatus = require('http-status');
+const config = require('./config');
+const { getUserById } = require('../services/user/user');
+const ApiError = require('../utils/ApiError');
 
 const jwtOptions = {
   secretOrKey: config.jwt.secret,
@@ -11,8 +11,8 @@ const jwtOptions = {
 
 const jwtVerify = async (payload, done) => {
   try {
-    if (payload.type != "access") {
-      throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid token type");
+    if (payload.type != 'access') {
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid token type');
     }
     const user = await getUserById(payload.sub);
     if (!user) {

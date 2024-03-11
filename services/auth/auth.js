@@ -1,17 +1,17 @@
-const httpStatus = require("http-status");
-const ApiError = require("../../utils/ApiError");
-const { getUser, createUser } = require("../user/user");
+const httpStatus = require('http-status');
+const ApiError = require('../../utils/ApiError');
+const { getUser, createUser } = require('../user/user');
 const {
   generateToken,
   verifyToken,
   saveToken,
-} = require("../token/generateToken");
+} = require('../token/generateToken');
 const {
   emailIpBruteLimiter,
   slowerBruteLimiter,
   emailBruteLimiter,
-} = require("../../middlewares/rateLimiter");
-const { logger } = require("../../config/logger");
+} = require('../../middlewares/rateLimiter');
+const { logger } = require('../../config/logger');
 
 // const login = async (body) => {
 //   const { email, password, ipAddress } = body;
@@ -50,31 +50,31 @@ const login = async (body) => {
           emailBruteLimiter.consume(email),
         ]);
       await Promise.all(promises);
-      throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid credentials");
+      throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid credentials');
     }
     const tokens = await loginTokens(user._id);
-    await saveToken(tokens.refreshToken, user._id, "refresh");
+    await saveToken(tokens.refreshToken, user._id, 'refresh');
     return tokens;
   } catch (error) {
-    console.log("error", error);
-    logger.error("Login error:", error);
+    console.log('error', error);
+    logger.error('Login error:', error);
     throw new ApiError(
-      error?.remainingPoints == 0
+      error.remainingPoints == 0
         ? httpStatus.TOO_MANY_REQUESTS
         : error.statusCode,
-      error?.remainingPoints == 0 ? "Too many requests" : error.message,
+      error.remainingPoints == 0 ? 'Too many requests' : error.message,
     );
   }
 };
 
 const refreshAuthToken = async (refreshToken) => {
-  const doc = await verifyToken(refreshToken, "refresh");
-  return await generateToken(doc.user, "access");
+  const doc = await verifyToken(refreshToken, 'refresh');
+  return await generateToken(doc.user, 'access');
 };
 
 const loginTokens = async (userId) => {
-  const at = await generateToken(userId, "access");
-  const rt = await generateToken(userId, "refresh");
+  const at = await generateToken(userId, 'access');
+  const rt = await generateToken(userId, 'refresh');
   return { accessToken: at, refreshToken: rt };
 };
 

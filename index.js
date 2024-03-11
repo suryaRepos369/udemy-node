@@ -1,8 +1,8 @@
-const http = require("http");
-const config = require("./config/config");
-const log = require("./config/logger");
-const dbConnect = require("./db/db");
-const app = require("./server");
+const http = require('http');
+const config = require('./config/config');
+const log = require('./config/logger');
+const dbConnect = require('./db/db');
+const app = require('./server');
 
 let server;
 
@@ -14,7 +14,7 @@ async function startServer() {
       log.logger.info(`Server is running on port ${config.port}`);
     });
   } catch (error) {
-    log.logger.error("Error starting server:", error);
+    log.logger.error('Error starting server:', error);
     exitHandler();
   }
 }
@@ -22,7 +22,7 @@ async function startServer() {
 function exitHandler() {
   if (server) {
     server.close(() => {
-      log.logger.info("Server closed due to error");
+      log.logger.info('Server closed due to error');
       process.exit(1);
     });
   } else {
@@ -31,10 +31,10 @@ function exitHandler() {
 }
 
 function gracefulShutdown() {
-  log.logger.info("Received SIGINT signal. Shutting down gracefully...");
+  log.logger.info('Received SIGINT signal. Shutting down gracefully...');
   if (server) {
     server.close(() => {
-      log.logger.info("HTTP server closed.");
+      log.logger.info('HTTP server closed.');
       process.exit(0);
     });
   } else {
@@ -43,22 +43,22 @@ function gracefulShutdown() {
 }
 
 async function gracefulShutdownSIGTERM() {
-  log.logger.info("SIGTERM received. Shutting down gracefully...");
+  log.logger.info('SIGTERM received. Shutting down gracefully...');
   if (server) {
     try {
       await new Promise((resolve, reject) => {
         server.close((err) => {
           if (err) {
-            log.logger.error("Error while closing server:", err);
+            log.logger.error('Error while closing server:', err);
             reject(err);
           } else {
-            log.logger.info("Server closed successfully.");
+            log.logger.info('Server closed successfully.');
             resolve();
           }
         });
       });
     } catch (error) {
-      log.logger.error("Error while closing server:", error);
+      log.logger.error('Error while closing server:', error);
       process.exit(1);
     }
   }
@@ -69,15 +69,15 @@ async function gracefulShutdownSIGTERM() {
 startServer();
 
 // Event handlers
-process.on("unhandledRejection", (reason, promise) => {
-  log.logger.error("Unhandled Rejection at:", promise, "reason:", reason);
+process.on('unhandledRejection', (reason, promise) => {
+  log.logger.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
-process.on("uncaughtException", (error) => {
-  log.logger.error("Uncaught Exception:", error);
+process.on('uncaughtException', (error) => {
+  log.logger.error('Uncaught Exception:', error);
   exitHandler();
 });
 
-process.on("SIGINT", gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
 
-process.on("SIGTERM", gracefulShutdownSIGTERM);
+process.on('SIGTERM', gracefulShutdownSIGTERM);

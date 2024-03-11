@@ -1,7 +1,8 @@
-const mongoose = require("mongoose");
-const { RateLimiterMongo } = require("rate-limiter-flexible");
-const ApiError = require("../utils/ApiError");
-const httpStatus = require("http-status");
+const mongoose = require('mongoose');
+const { RateLimiterMongo } = require('rate-limiter-flexible');
+const httpStatus = require('http-status');
+const ApiError = require('../utils/ApiError');
+
 const maxAttemptsPerDay = 100;
 const maxAttemptsByIpUsername = 10;
 const maxAttemptsByEmail = 5;
@@ -11,7 +12,7 @@ const emailIpBruteLimiter = new RateLimiterMongo({
   points: maxAttemptsByIpUsername,
   duration: 60 * 60 * 24,
   blockDuration: 60 * 5,
-  dbName: "test1",
+  dbName: 'test1',
 });
 
 const slowerBruteLimiter = new RateLimiterMongo({
@@ -19,14 +20,14 @@ const slowerBruteLimiter = new RateLimiterMongo({
   points: maxAttemptsPerDay,
   duration: 60 * 60 * 24,
   blockDuration: 60 * 60 * 24,
-  dbName: "test1",
+  dbName: 'test1',
 });
 const emailBruteLimiter = new RateLimiterMongo({
   storeClient: mongoose.connection,
   points: maxAttemptsByEmail,
   duration: 60 * 60 * 24,
   blockDuration: 60 * 60 * 24,
-  dbName: "test1",
+  dbName: 'test1',
 });
 
 const authLimiter = async (req, res, next) => {
@@ -39,8 +40,8 @@ const authLimiter = async (req, res, next) => {
       emailBruteLimiter.get(req.body.email),
     ]);
 
-    console.log("&&&&&&&&&&&&&&", slowerBruteRes);
-    console.log("%%%%%%%%%%%%%% email Ip logins", emailIpRes);
+    console.log('&&&&&&&&&&&&&&', slowerBruteRes);
+    console.log('%%%%%%%%%%%%%% email Ip logins', emailIpRes);
     let retrySeconds = 0;
 
     if (slowerBruteRes && slowerBruteRes.consumedPoints > maxAttemptsPerDay) {
@@ -54,16 +55,15 @@ const authLimiter = async (req, res, next) => {
       retrySeconds = Math.floor(emailIpRes.msBeforeNext / 1000) || 1;
     }
 
-    console.log("retry seconds", retrySeconds);
+    console.log('retry seconds', retrySeconds);
     if (retrySeconds > 0) {
-      console.log("retry second >0 ");
-      res.set("Retry-After", String(retrySeconds));
+      console.log('retry second >0 ');
+      res.set('Retry-After', String(retrySeconds));
       return next(
-        new ApiError(httpStatus.TOO_MANY_REQUESTS, "Too many requests"),
+        new ApiError(httpStatus.TOO_MANY_REQUESTS, 'Too many requests'),
       );
-    } else {
-      next();
     }
+    next();
   } catch (error) {
     next(error);
   }
