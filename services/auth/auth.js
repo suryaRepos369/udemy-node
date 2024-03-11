@@ -35,7 +35,7 @@ const login = async (body) => {
     await transporter.sendMail({
       from: config.mail.id,
       to: 'suryaprakasamc@gmail.com',
-      subject: 'checking node mailer',
+      subject: 'checking node  mailer',
       text: `Logging detected for user ${user.name} with mail ${email} at ${Date.now()} \n If not You Please contact support`,
     });
     transporter;
