@@ -3,7 +3,7 @@ const config = require('./config/config');
 const log = require('./config/logger');
 const dbConnect = require('./db/db');
 const app = require('./server');
-
+const fs = require('fs');
 let server;
 
 async function startServer() {
@@ -12,6 +12,12 @@ async function startServer() {
     const httpServer = http.createServer(app);
     server = httpServer.listen(config.port, () => {
       log.logger.info(`Server is running on port ${config.port}`);
+    });
+    //create uploads directory for file uploads
+    await fs.access('uploads', fs.constants.F_OK, async (err) => {
+      if (err) {
+        await fs.promises.mkdir('uploads');
+      }
     });
   } catch (error) {
     log.logger.error('Error starting server:', error);

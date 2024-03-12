@@ -31,8 +31,8 @@ const login = async (body) => {
     const tokens = await loginTokens(user._id);
     await saveToken(tokens.refreshToken, user._id, 'refresh');
     //send user mail
-    console.log('calling login event');
-    EventEmitter.emit('login', user);
+    // console.log('calling login event');
+    // EventEmitter.emit('login', user);
     return tokens;
   } catch (error) {
     // console.log('error', error);

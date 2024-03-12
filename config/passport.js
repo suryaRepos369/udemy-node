@@ -9,9 +9,11 @@ const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 };
 
+const tokenType = ['access', 'refresh'];
+
 const jwtVerify = async (payload, done) => {
   try {
-    if (payload.type != 'access') {
+    if (!tokenType.includes(payload.type)) {
       throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid token type');
     }
     const user = await getUserById(payload.sub);

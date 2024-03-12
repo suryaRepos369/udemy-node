@@ -6,7 +6,6 @@ const catchAsync = (fn) => async (req, res, next) => {
   try {
     const result = await fn(req, res, next);
     const isStreaming = req.query.streaming === 'true';
-    // console.log('*****is streaming', isStreaming);
     if (!isStreaming) {
       if (result instanceof ApiResponse) {
         res.json(result);

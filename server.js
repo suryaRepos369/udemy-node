@@ -54,8 +54,6 @@ Object.keys(subscribers).forEach((eventName) => {
   EventEmitter.on(eventName, subscribers[eventName]);
 });
 
-console.log('listing subsribers', Object.keys(subscribers));
-
 app.use((req, res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
 });

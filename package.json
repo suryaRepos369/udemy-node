@@ -15,7 +15,7 @@
     "lint-stage": "lint-staged"
   },
   "lint-staged": {
-    "*.{js,jsx, ts, tsx, md, html, css}": "[prettier --write eslint --fix]"
+    "*.{js,jsx, ts, tsx, md, html, css}": "[prettier --write]"
   },
   "author": "surya",
   "license": "ISC",
@@ -34,12 +34,14 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.2.0",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.12",
     "openai": "^4.28.4",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "rate-limiter-flexible": "^5.0.0",
     "safe-regex": "^2.1.1",
+    "sharp": "^0.33.2",
     "validator": "^13.11.0",
     "winston": "^3.11.0"
   },
