@@ -41,6 +41,7 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "rate-limiter-flexible": "^5.0.0",
+    "redis": "^4.6.13",
     "safe-regex": "^2.1.1",
     "sharp": "^0.33.2",
     "validator": "^13.11.0",

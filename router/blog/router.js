@@ -19,6 +19,7 @@ const ApiError = require('../../utils/ApiError.js');
 const imageProcessingQueue = require('../../backgroundTask/queues/imageProcessing.js');
 const worker = require('../../backgroundTask/workers/index.js');
 const eventEmitter = require('../../utils/eventEmitter.js');
+const { ImageProcessor } = require('../../backgroundTask/index.js');
 
 router.use(authMiddleware);
 router.get(
@@ -47,12 +48,13 @@ router.post(
     const q = parseInt(quality);
     const filename = `image-${Date.now()}${file.originalname.split('.')[0]}.jpg`;
     const outputPath = `${__dirname}/../../uploads/processed/${filename}`;
-    let c = await imageProcessingQueue.add('ImageProcessorJob', {
+
+    await ImageProcessor.Queue.add('ImageProcessorJob', {
       file,
       q,
       outputPath,
     });
-    const a = worker.start();
+    ImageProcessor.Worker.start();
     return new ApiResponse(httpStatus.OK, 'File upload success', filename);
   }),
 );
@@ -83,12 +85,13 @@ router.post(
     const q = parseInt(quality);
     const filename = `image-${Date.now()}${file.originalname.split('.')[0]}.jpg`;
     const outputPath = `${__dirname}/../../uploads/processed/${filename}`;
-    await imageProcessingQueue.add('ImageProcessorJob', {
+    ImageProcessor.Queue.add('ImageProcessorJob', {
       file,
       q,
       outputPath,
     });
-    worker.start();
+    ImageProcessor.Worker.start();
+
     const waitForCompression = new Promise((resolve) => {
       eventEmitter.once('imageCompressionComplete', () => {
         resolve();

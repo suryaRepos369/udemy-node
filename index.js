@@ -4,10 +4,13 @@ const log = require('./config/logger');
 const dbConnect = require('./db/db');
 const app = require('./server');
 const fs = require('fs');
+const { testRedis } = require('./loaders/redis');
+
 let server;
 
 async function startServer() {
   try {
+    // await testRedis();
     await dbConnect();
     const httpServer = http.createServer(app);
     server = httpServer.listen(config.port, () => {
