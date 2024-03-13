@@ -16,6 +16,9 @@ const ApiResponse = require('../../utils/ApiResponse.js');
 const authMiddleware = require('../../middlewares/auth.js');
 const upload = require('../../utils/multer.js');
 const ApiError = require('../../utils/ApiError.js');
+const imageProcessingQueue = require('../../backgroundTask/queues/imageProcessing.js');
+const worker = require('../../backgroundTask/workers/index.js');
+const eventEmitter = require('../../utils/eventEmitter.js');
 
 router.use(authMiddleware);
 router.get(
@@ -39,8 +42,18 @@ router.post(
   upload.single('cover-image'),
   catchAsync(async (req, res, next) => {
     if (!req.file) throw new ApiError(httpStatus.NOT_FOUND, 'file not found');
-    const filepath = `${req.file.filename}`;
-    return new ApiResponse(httpStatus.OK, 'File upload success', filepath);
+    const file = req.file;
+    const { quality = 90 } = req.body;
+    const q = parseInt(quality);
+    const filename = `image-${Date.now()}${file.originalname.split('.')[0]}.jpg`;
+    const outputPath = `${__dirname}/../../uploads/processed/${filename}`;
+    let c = await imageProcessingQueue.add('ImageProcessorJob', {
+      file,
+      q,
+      outputPath,
+    });
+    const a = worker.start();
+    return new ApiResponse(httpStatus.OK, 'File upload success', filename);
   }),
 );
 
@@ -53,7 +66,6 @@ router.get(
     const contentType = `image/${filename.split('.')[1].toLowerCase()}`;
     res.setHeader('content-Type', contentType);
     stream.pipe(res);
-    // return new ApiResponse(httpStatus.CREATED, 'Blog creation success', '');
   }),
 );
 
@@ -61,20 +73,30 @@ router.post(
   '/compress',
   upload.single('image'),
   catchAsync(async (req, res, next) => {
-    console.log(
-      'compressing file****************************************************',
-      req.file,
-    );
     if (!req.file) {
       throw new ApiError(httpStatus.NOT_FOUND, 'File not found');
     }
-
-    const fp = await uploadFile(req.file);
-    console.log(fp);
+    // const fp = await uploadFile(req.file);
     req.query.streaming = 'true';
-    const stream = await getReadableFileStream('', fp);
-
-    const contentType = `image/${fp.split('.')[1].toLowerCase()}`;
+    const file = req.file;
+    const { quality = 90 } = req.body;
+    const q = parseInt(quality);
+    const filename = `image-${Date.now()}${file.originalname.split('.')[0]}.jpg`;
+    const outputPath = `${__dirname}/../../uploads/processed/${filename}`;
+    await imageProcessingQueue.add('ImageProcessorJob', {
+      file,
+      q,
+      outputPath,
+    });
+    worker.start();
+    const waitForCompression = new Promise((resolve) => {
+      eventEmitter.once('imageCompressionComplete', () => {
+        resolve();
+      });
+    });
+    await waitForCompression;
+    const stream = await getReadableFileStream(filename, '');
+    const contentType = `image/${filename.split('.')[1].toLowerCase()}`;
     res.setHeader('content-Type', contentType);
     stream.pipe(res);
   }),

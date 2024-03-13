@@ -15,13 +15,14 @@
     "lint-stage": "lint-staged"
   },
   "lint-staged": {
-    "*.{js,jsx, ts, tsx, md, html, css}": "[prettier --write]"
+    "*.{js,jsx, ts, tsx, md, html, css}": "prettier --write"
   },
   "author": "surya",
   "license": "ISC",
   "dependencies": {
     "@meanie/mongoose-to-json": "^2.6.0",
     "bcryptjs": "^2.4.3",
+    "bullmq": "^5.4.2",
     "cors": "^2.8.5",
     "dayjs": "^1.11.10",
     "dotenv": "^16.4.5",

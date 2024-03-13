@@ -39,4 +39,8 @@ module.exports = {
     id: envVars.EMAIL,
     pwd: envVars.PWD,
   },
+  redis: {
+    host: envVars.REDIS_HOST,
+    port: envVars.REDIS_PORT,
+  },
 };

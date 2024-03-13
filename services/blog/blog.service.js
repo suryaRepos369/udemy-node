@@ -3,9 +3,11 @@ const { getUser } = require('../user/user.js');
 const upload = require('../../utils/multer.js');
 const fs = require('fs');
 const sharp = require('sharp');
+const workers = require('../../backgroundTask/workers/index.js');
 
 const ApiError = require('../../utils/ApiError.js');
 const httpStatus = require('http-status');
+const imageProcessingQueue = require('../../backgroundTask/queues/imageProcessing.js');
 const getList = async () => {
   const data = await Blog.find({}).select('title description createdBy');
   if (data && data.length > 0) {
@@ -23,17 +25,17 @@ const addList = async ({ title, description, email }) => {
   return a;
 };
 
-const uploadFile = async (file) => {
-  const filename = `image-${Date.now()}${file.originalname.split('.')[0]}.jpg`;
-  const outputPath = `${__dirname}/../../uploads/processed/${filename}`;
-  await sharp(file.buffer).jpeg({ quality: 50 }).toFile(outputPath);
-  return outputPath;
-};
+// const uploadFile = async (file) => {
+//   const filename = `image-${Date.now()}${file.originalname.split('.')[0]}.jpg`;
+//   const outputPath = `${__dirname}/../../uploads/processed/${filename}`;
+//   await sharp(file.buffer).jpeg({ quality: 50 }).toFile(outputPath);
+//   return outputPath;
+// };
 
 const getReadableFileStream = async (filename, path) => {
   let filepath;
   if (!path) {
-    filepath = `${__dirname}/../../uploads/${filename}`;
+    filepath = `${__dirname}/../../uploads/processed/${filename}`;
   } else {
     filepath = path;
   }
@@ -47,4 +49,4 @@ const getReadableFileStream = async (filename, path) => {
   }
 };
 
-module.exports = { getList, addList, uploadFile, getReadableFileStream };
+module.exports = { getList, addList, getReadableFileStream };
