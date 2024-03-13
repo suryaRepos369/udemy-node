@@ -7,6 +7,14 @@ const envVarSchema = joi
   .object({
     MONGODB_URL: joi.string().required(),
     PORT: joi.number().positive().default(3001),
+    NODE_ENV: joi.string().default('development'),
+    JWT_SECRET: joi.string().required(),
+    JWT_ACCESS_EXPIRY_MINUTES: joi.number().required(),
+    OPEN_AI_API_KEY: joi.string().optional(),
+    EMAIL: joi.string().required(),
+    PWD: joi.string().required(),
+    REDIS_HOST: joi.string().default('localhost'),
+    REDIS_PORT: joi.number().default(6379),
   })
   .unknown();
 
