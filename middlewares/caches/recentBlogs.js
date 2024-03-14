@@ -8,7 +8,9 @@ module.exports = async (req, res, next) => {
     const key = 'recent-blogs';
     const cachedBlogs = await client.get(key);
     if (cachedBlogs) {
-      res.json(JSON.parse(cachedBlogs));
+      res.json(
+        new ApiResponse(httpStatus.OK, 'success', JSON.parse(cachedBlogs)),
+      );
     } else {
       next();
     }

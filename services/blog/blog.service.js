@@ -20,6 +20,7 @@ const addList = async ({ title, description, email }) => {
   const payload = { title, description, createdBy };
   const newData = new Blog(payload);
   const a = await newData.save();
+  redisClient.del('recent-blogs');
   return a;
 };
 
@@ -47,9 +48,8 @@ const getRecentList = async () => {
     })
     .limit(5);
   if (data && data.length > 0) {
-    console.log('adding the cache queue');
     await CacheProcessor.Queue.add('Cache Queue', { blogs: data });
-    CacheProcessor.Worker.startCache();
+    // CacheProcessor.Worker.startCache();
     // await redisClient.set('recent-blogs', JSON.stringify(data));
     return data;
   }
