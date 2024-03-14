@@ -1,24 +1,31 @@
+const mongooseToJson = require('@meanie/mongoose-to-json');
 const { default: mongoose } = require('mongoose');
 
-const blogSchema = mongoose.Schema({
-  title: {
-    type: String,
-    required: true,
+const blogSchema = mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: false,
+    },
+    coverImage: {
+      type: String,
+    },
+    createdBy: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
-  description: {
-    type: String,
-    required: false,
+  {
+    timestamps: true,
   },
-  coverImage: {
-    type: String,
-  },
-  createdBy: {
-    type: mongoose.SchemaTypes.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-});
+);
 
+blogSchema.plugin(mongooseToJson);
 const blogModel = mongoose.model('Blog', blogSchema);
 
 module.exports = blogModel;

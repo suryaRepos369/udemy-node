@@ -10,6 +10,7 @@ const start = () => {
       host: config.redis.host,
       port: config.redis.port,
     },
+    removeOnComplete: true,
   });
 
   imageProcessingWorker.on('completed', (job) => {

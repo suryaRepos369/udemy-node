@@ -10,7 +10,7 @@ const {
   getList,
   addList,
   getReadableFileStream,
-  uploadFile,
+  getRecentList,
 } = require('../../services/blog/blog.service.js');
 const ApiResponse = require('../../utils/ApiResponse.js');
 const authMiddleware = require('../../middlewares/auth.js');
@@ -20,12 +20,23 @@ const imageProcessingQueue = require('../../backgroundTask/queues/imageProcessin
 const worker = require('../../backgroundTask/workers/index.js');
 const eventEmitter = require('../../utils/eventEmitter.js');
 const { ImageProcessor } = require('../../backgroundTask/index.js');
+const recentBlogCache = require('../../middlewares/caches/recentBlogs.js');
 
-router.use(authMiddleware);
+// router.use(authMiddleware);
+
 router.get(
   '/list',
   catchAsync(async (req, res) => {
     const a = await getList();
+    return new ApiResponse(httpStatus.OK, 'get user list success', a);
+  }),
+);
+
+router.get(
+  '/getRecentList',
+  recentBlogCache,
+  catchAsync(async (req, res) => {
+    const a = await getRecentList();
     return new ApiResponse(httpStatus.OK, 'get user list success', a);
   }),
 );
@@ -38,6 +49,7 @@ router.post(
     return new ApiResponse(httpStatus.CREATED, 'Blog creation success', a);
   }),
 );
+
 router.post(
   '/upload-cover-image',
   upload.single('cover-image'),
