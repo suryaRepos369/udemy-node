@@ -1,0 +1,8 @@
+create redis cache queue for adding the redis cache key set
+
+
+1) create a file in Queue
+
+important 
+Worker name and the Queue name must be the same
+

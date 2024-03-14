@@ -10,13 +10,34 @@ const start = () => {
       host: config.redis.host,
       port: config.redis.port,
     },
-    removeOnComplete: true,
+    concurrency: 3,
   });
 
   imageProcessingWorker.on('completed', (job) => {
     logger.info(`completed job ${job.id}`);
     eventEmitter.emit('imageCompressionComplete');
   });
+  imageProcessingWorker.on('failed', (job) => {
+    logger.error(`Error  job ${job.id} ::: ${job.failedReason} `);
+  });
 };
 
-module.exports = { start };
+const startCache = () => {
+  const cacheFile = path.join(__dirname, 'cacheProcessor.js');
+  const cacheProcessingWorker = new Worker('CacheProcessor', cacheFile, {
+    connection: {
+      host: config.redis.host,
+      port: config.redis.port,
+    },
+  });
+
+  cacheProcessingWorker.on('failed', (job) => {
+    logger.error(`Error  job ${job.id} ::: ${job.failedReason} `);
+  });
+
+  cacheProcessingWorker.on('completed', (job) => {
+    logger.info(`completed job ${job.id}`);
+  });
+};
+
+module.exports = { start, startCache };

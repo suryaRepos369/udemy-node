@@ -1,13 +1,10 @@
 const Blog = require('../../models/blog.js');
 const { getUser } = require('../user/user.js');
-const upload = require('../../utils/multer.js');
 const fs = require('fs');
-const sharp = require('sharp');
-const workers = require('../../backgroundTask/workers/index.js');
-
 const ApiError = require('../../utils/ApiError.js');
 const httpStatus = require('http-status');
 const redisClient = require('../../loaders/redis.js');
+const { CacheProcessor } = require('../../backgroundTask/index.js');
 
 const getList = async () => {
   const data = await Blog.find({}).select('title description createdBy');
@@ -33,9 +30,7 @@ const getReadableFileStream = async (filename, path) => {
   } else {
     filepath = path;
   }
-  // const filepath = path || `${__dirname}/../../uploads/${filename}`
   if (fs.existsSync(filepath)) {
-    // console.log('file is present ')
     const fileStream = fs.createReadStream(filepath);
     return fileStream;
   } else {
@@ -52,7 +47,10 @@ const getRecentList = async () => {
     })
     .limit(5);
   if (data && data.length > 0) {
-    await redisClient.set('recent-blogs', JSON.stringify(data));
+    console.log('adding the cache queue');
+    await CacheProcessor.Queue.add('Cache Queue', { blogs: data });
+    CacheProcessor.Worker.startCache();
+    // await redisClient.set('recent-blogs', JSON.stringify(data));
     return data;
   }
   return 'no data found';
