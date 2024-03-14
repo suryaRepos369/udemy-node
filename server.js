@@ -22,6 +22,8 @@ const authRouter = require('./router/auth/auth');
 const streamRouter = require('./router/stream/route');
 const config = require('./config/config');
 const createWorker = require('./backgroundTask/workers');
+// import workers from
+const workers = require('./backgroundTask/workers/workers_Queues_array');
 
 log.attachLogger(app);
 app.use(cors());
@@ -58,11 +60,6 @@ Object.keys(subscribers).forEach((eventName) => {
 app.use((req, res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
 });
-
-const workers = [
-  { name: 'ImageProcessor', filename: 'imageProcessor.js' },
-  { name: 'CacheProcessor', filename: 'cacheProcessor.js' },
-];
 
 workers.forEach(async (worker) => {
   await createWorker(worker.name, worker.filename);
